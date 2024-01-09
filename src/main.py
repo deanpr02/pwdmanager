@@ -26,7 +26,8 @@ def main():
     return 0    
 
 # Main function call
-main()
+if __name__ == "__main__":
+    main()
 
 
 
