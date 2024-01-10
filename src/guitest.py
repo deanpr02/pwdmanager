@@ -25,16 +25,16 @@ class LogScreen():
     
     def button_callback(self,root):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            self.toplevel_window=PasswordScreen(root)
+            screen = MainScreen(root)
         else:
             self.toplevel_window.focus()
 
 
-class PasswordScreen():
+class MainScreen():
     def __init__(self,root):
         #Creates new window for passwords
+        self.current_window = None
         new_root = customtkinter.CTkToplevel(root)
-        root.iconify()
         width = 450
         height = 400
 
@@ -49,3 +49,7 @@ class PasswordScreen():
         new_root.geometry("%dx%d+%d+%d" % (width,height,x,y))
         test_lbl = customtkinter.CTkLabel(new_root,text="Password Screen!")
         test_lbl.pack(pady=12,padx=10)
+        new_root.protocol("WM_DELETE_WINDOW",lambda: self.close_window(root))
+
+    def close_window(self,root):
+        root.destroy()
