@@ -1,8 +1,24 @@
 import customtkinter
-from functools import partial
 
-def test():
-    print("test")
+#root.withdraw hides root window
+
+#root.update()
+#root.deiconify() brings it back into view
+
+#sets the dimensions of the window, and the x/y coordinates to center window
+def set_window_dimensions(root):
+    width = 450
+    height = 400
+
+    screen_w = root.winfo_screenwidth()
+    screen_h = root.winfo_screenheight()
+
+    x = (screen_w/2) - (width/2)
+    y = (screen_h/2) - (height/2)
+    root.geometry("%dx%d+%d+%d" % (width,height,x,y))
+
+def close_window(root):
+        root.destroy()
 
 class LogScreen():
     def __init__(self,root):
@@ -24,32 +40,19 @@ class LogScreen():
         login_btn.pack(pady=12,padx=10)
     
     def button_callback(self,root):
-        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            screen = MainScreen(root)
-        else:
-            self.toplevel_window.focus()
+        if self.toplevel_window is None:
+            self.toplevel_window = MainScreen(root)
+            root.withdraw()
 
 
 class MainScreen():
-    def __init__(self,root):
+    def __init__(self,root,current_user):
+        self.current_user = current_user
         #Creates new window for passwords
-        self.current_window = None
-        new_root = customtkinter.CTkToplevel(root)
-        width = 450
-        height = 400
+        main_sc_root = customtkinter.CTkToplevel(root)
+        main_sc_root.title("Password Manager")
+        set_window_dimensions(main_sc_root)
 
-        screen_w = new_root.winfo_screenwidth()
-        screen_h = new_root.winfo_screenheight()
-
-        x = (screen_w/2) - (width/2)
-        y = (screen_h/2) - (height/2)
-
-        new_root.title("Password Manager")
-        #root.geometry("450x400")
-        new_root.geometry("%dx%d+%d+%d" % (width,height,x,y))
-        test_lbl = customtkinter.CTkLabel(new_root,text="Password Screen!")
+        test_lbl = customtkinter.CTkLabel(main_sc_root,text="Password Screen!")
         test_lbl.pack(pady=12,padx=10)
-        new_root.protocol("WM_DELETE_WINDOW",lambda: self.close_window(root))
-
-    def close_window(self,root):
-        root.destroy()
+        main_sc_root.protocol("WM_DELETE_WINDOW",lambda: close_window(root))
