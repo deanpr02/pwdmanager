@@ -41,8 +41,38 @@ class LogScreen():
     
     def button_callback(self,root):
         if self.toplevel_window is None:
-            self.toplevel_window = MainScreen(root)
+            self.toplevel_window = MainScreen(root,"place_holder_user")
             root.withdraw()
+
+class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
+     def __init__(self,master,**kwargs):
+          super().__init__(master,**kwargs)
+          #list to hold the password components
+          self.password_comp_list = []
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"])
+
+        
+class PasswordFrame():
+    def __init__(self,root,w_width):
+        self.w_width = w_width
+        test_frame = customtkinter.CTkFrame(root,width=self.w_width,height=50,fg_color="gray")
+        test_frame.pack(padx=5,pady=5)
+        test_frame.bind("<Button-1>",self.bruh)
+    def bruh(self,event):
+        print("This is a test") 
+          
+               
+
+          
 
 
 class MainScreen():
@@ -53,6 +83,15 @@ class MainScreen():
         main_sc_root.title("Password Manager")
         set_window_dimensions(main_sc_root)
 
-        test_lbl = customtkinter.CTkLabel(main_sc_root,text="Password Screen!")
-        test_lbl.pack(pady=12,padx=10)
+        #hotbar components
+        hotbar = customtkinter.CTkFrame(main_sc_root,width=450,height=35,fg_color=("gray"),border_color=("green"),border_width=1)
+        hotbar.pack(pady=0,padx=0)
+        hotbar.pack_propagate(0)
+        add_pass_btn = customtkinter.CTkButton(hotbar,text="+",font=(("Roboto",15)),text_color=("white"),fg_color=("darkblue"),width=25,height=15)
+        add_pass_btn.pack(pady=5,padx=0)
+
+        frame = PasswordOuterFrame(master=main_sc_root,width=350,height=300,border_width=3,border_color=("darkgreen"),scrollbar_fg_color=("green"),corner_radius=10,scrollbar_button_color=("white"))
+        frame.pack(pady=15,padx=10)
+
+        
         main_sc_root.protocol("WM_DELETE_WINDOW",lambda: close_window(root))
