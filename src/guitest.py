@@ -49,26 +49,29 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
           super().__init__(master,**kwargs)
           #list to hold the password components
           self.password_comp_list = []
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
-          PasswordFrame(self,kwargs["width"])
+          PasswordFrame(self,kwargs["width"],1)
+          PasswordFrame(self,kwargs["width"],2)
+          PasswordFrame(self,kwargs["width"],3)
+          PasswordFrame(self,kwargs["width"],4)
+          PasswordFrame(self,kwargs["width"],5)
+          PasswordFrame(self,kwargs["width"],6)
+          PasswordFrame(self,kwargs["width"],7)
+          PasswordFrame(self,kwargs["width"],8)
+          PasswordFrame(self,kwargs["width"],9)
+          PasswordFrame(self,kwargs["width"],10)
 
         
 class PasswordFrame():
-    def __init__(self,root,w_width):
+    def __init__(self,root,w_width,key):
         self.w_width = w_width
+        self.key = key
         test_frame = customtkinter.CTkFrame(root,width=self.w_width,height=50,fg_color="gray")
         test_frame.pack(padx=5,pady=5)
-        test_frame.bind("<Button-1>",self.bruh)
-    def bruh(self,event):
-        print("This is a test") 
+        test_frame.bind("<Button-1>",lambda event, a=self.key: self.bruh(event,a))
+    
+    #Will want to pull up a screen that allows you to modify the information for that password
+    def bruh(self, event, key):
+        print(f"Key: {key}") 
           
                
 
