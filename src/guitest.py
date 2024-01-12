@@ -45,33 +45,60 @@ class LogScreen():
             root.withdraw()
 
 class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
-     def __init__(self,master,**kwargs):
-          super().__init__(master,**kwargs)
-          #list to hold the password components
-          self.password_comp_list = []
-          PasswordFrame(self,kwargs["width"],1)
-          PasswordFrame(self,kwargs["width"],2)
-          PasswordFrame(self,kwargs["width"],3)
-          PasswordFrame(self,kwargs["width"],4)
-          PasswordFrame(self,kwargs["width"],5)
-          PasswordFrame(self,kwargs["width"],6)
-          PasswordFrame(self,kwargs["width"],7)
-          PasswordFrame(self,kwargs["width"],8)
-          PasswordFrame(self,kwargs["width"],9)
-          PasswordFrame(self,kwargs["width"],10)
+    def __init__(self,master,**kwargs):
+        super().__init__(master,**kwargs)
+        #list to hold the password components
+        self.password_comp_list = []
+        self.edit_window = None
+        self.password_child = None
 
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+        PasswordFrame(self,kwargs["width"])
+    
+    def check_if_window_open(self):
+        if self.edit_window is None or not self.edit_window.winfo_exists():
+             return True
+        return False
+    
+    def update_edit_window(self,child):
+        self.edit_window = customtkinter.CTkToplevel(self)
+        self.password_child = child
+
+        btn = customtkinter.CTkButton(self.edit_window,text="press",command=self.edit)
+        btn.pack()
+
+    def edit(self):
+        self.password_child.test = customtkinter.CTkLabel(self.password_child.pass_container,text="Success")
+        self.password_child.test.pack()
         
 class PasswordFrame():
-    def __init__(self,root,w_width,key):
+    def __init__(self,root,w_width):
         self.w_width = w_width
-        self.key = key
-        test_frame = customtkinter.CTkFrame(root,width=self.w_width,height=50,fg_color="gray")
-        test_frame.pack(padx=5,pady=5)
-        test_frame.bind("<Button-1>",lambda event, a=self.key: self.bruh(event,a))
+        self.pass_name = "<Place_holder>"
+        #Replace this with different components
+        self.test = None
+
+        self.pass_container = customtkinter.CTkFrame(root,width=self.w_width,height=50,fg_color="gray")
+        self.pass_container.pack(padx=5,pady=5)
+        self.pass_container.bind("<Button-1>",lambda event, a=root: self.edit_password(event,a))
+        self.pass_container.pack_propagate(0)
+
+        self.pass_name_lbl = customtkinter.CTkLabel(self.pass_container,text=self.pass_name,anchor="w")
+        self.pass_name_lbl.pack(side="left",padx=5)
     
     #Will want to pull up a screen that allows you to modify the information for that password
-    def bruh(self, event, key):
-        print(f"Key: {key}") 
+    def edit_password(self, event, root):
+        if root.check_if_window_open():
+            root.update_edit_window(self)
+
           
                
 
