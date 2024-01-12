@@ -68,22 +68,35 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
     
     #Makes sure only one instance of an edit window is open
     def check_if_window_open(self):
-        if self.edit_window is None or not self.edit_window.winfo_exists():
+        if self.edit_window is None or not self.edit_window.window.winfo_exists():
              return True
         return False
     
     #handler function for the edit window
     def update_edit_window(self,child):
-        self.edit_window = customtkinter.CTkToplevel(self)
         self.password_child = child
+        self.edit_window = EditWindow(self,self.password_child)
 
-        btn = customtkinter.CTkButton(self.edit_window,text="press",command=self.edit)
-        btn.pack()
+        
+class EditWindow():
+    def __init__(self,root,child):
+        self.child = child
+        self.window = customtkinter.CTkToplevel(root)
+
+        email_lbl = customtkinter.CTkLabel(self.window,text="Email:")
+        email_lbl.pack()
+        self.email_txt = customtkinter.CTkEntry(self.window)
+        self.email_txt.pack()
+        confirm_btn = customtkinter.CTkButton(self.window,text="press",command=self.edit)
+        confirm_btn.pack()
 
     def edit(self):
-        self.password_child.test = customtkinter.CTkLabel(self.password_child.pass_container,text="Success")
-        self.password_child.test.pack()
-        
+        new_email = self.email_txt.get()
+        self.child.email_name = new_email
+        self.child.email_name_lbl.configure(text=self.child.censor_email(new_email))
+
+
+
 class PasswordFrame():
     def __init__(self,root,w_width):
         self.w_width = w_width
