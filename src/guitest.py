@@ -44,12 +44,15 @@ class LogScreen():
             self.toplevel_window = MainScreen(root,"place_holder_user")
             root.withdraw()
 
+#Password Screen after logging in
 class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
     def __init__(self,master,**kwargs):
         super().__init__(master,**kwargs)
         #list to hold the password components
         self.password_comp_list = []
+        #var to hold the edit window so when one window is open, no other windows can open
         self.edit_window = None
+        #Holds the PasswordFrame class which invoked the edit window so we have access to that class
         self.password_child = None
 
         PasswordFrame(self,kwargs["width"])
@@ -63,11 +66,13 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
         PasswordFrame(self,kwargs["width"])
         PasswordFrame(self,kwargs["width"])
     
+    #Makes sure only one instance of an edit window is open
     def check_if_window_open(self):
         if self.edit_window is None or not self.edit_window.winfo_exists():
              return True
         return False
     
+    #handler function for the edit window
     def update_edit_window(self,child):
         self.edit_window = customtkinter.CTkToplevel(self)
         self.password_child = child
@@ -82,22 +87,61 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
 class PasswordFrame():
     def __init__(self,root,w_width):
         self.w_width = w_width
-        self.pass_name = "<Place_holder>"
+        self.app_name = "<App_Name>"
+        self.email_name = "email@gmail.com"
+        self.user_name= "N/A"
+        self.password = "N/A"
         #Replace this with different components
         self.test = None
 
-        self.pass_container = customtkinter.CTkFrame(root,width=self.w_width,height=50,fg_color="gray")
+        self.pass_container = customtkinter.CTkFrame(root,width=self.w_width,height=80,fg_color="gray",border_color=("white"),border_width=1)
         self.pass_container.pack(padx=5,pady=5)
         self.pass_container.bind("<Button-1>",lambda event, a=root: self.edit_password(event,a))
         self.pass_container.pack_propagate(0)
+        
+        self.pass_container.columnconfigure(0,weight=1)
+        self.pass_container.columnconfigure(1,weight=1)
+        self.pass_container.columnconfigure(2,weight=3)
+        self.pass_container.rowconfigure(0,weight=1)
+        self.pass_container.rowconfigure(1,weight=1)
+        self.pass_container.rowconfigure(2,weight=1)
+        self.pass_container.grid_propagate(0)
 
-        self.pass_name_lbl = customtkinter.CTkLabel(self.pass_container,text=self.pass_name,anchor="w")
-        self.pass_name_lbl.pack(side="left",padx=5)
+        self.app_name_lbl = customtkinter.CTkLabel(self.pass_container,text=self.app_name,anchor="w")
+        self.app_name_lbl.grid(row=1,column=0,sticky="w",padx=5)
+        #self.app_name_lbl.pack(side="left",padx=5)
+        email_name_title_lbl = customtkinter.CTkLabel(self.pass_container,text="Email:",height=11)
+        email_name_title_lbl.grid(row=0,column=1)
+        self.email_name_lbl = customtkinter.CTkLabel(self.pass_container,text=self.censor_email(self.email_name),height=11,font=("Roboto",11))
+        self.email_name_lbl.grid(row=0,column=2)
+        #self.email_name_lbl.pack(padx=5,pady=5)
+        user_name_title_lbl = customtkinter.CTkLabel(self.pass_container,text="Username:",height=11)
+        user_name_title_lbl.grid(row=1,column=1)
+        self.user_name_lbl = customtkinter.CTkLabel(self.pass_container,text=self.user_name,height=11,font=("Roboto",11))
+        self.user_name_lbl.grid(row=1,column=2)
+        #self.user_name_lbl.pack(padx=5,pady=5)
+        password_title_lbl = customtkinter.CTkLabel(self.pass_container,text="Password:",height=11)
+        password_title_lbl.grid(row=2,column=1)
+        self.password_lbl = customtkinter.CTkLabel(self.pass_container,text=self.password,height=11)
+        self.password_lbl.grid(row=2,column=2)
+        #self.password_lbl.pack(padx=5,pady=5)
     
     #Will want to pull up a screen that allows you to modify the information for that password
     def edit_password(self, event, root):
         if root.check_if_window_open():
             root.update_edit_window(self)
+
+    def censor_email(self,email):
+        email = list(email)
+        censored_email = []
+        censored_email.append(email[0])
+        for i,letter in enumerate(email[1:]):
+            if letter == '@':
+                censored_email[len(censored_email):] = email[i:]
+                return "".join(censored_email)
+            censored_email.append('*')
+
+
 
           
                
@@ -120,7 +164,7 @@ class MainScreen():
         add_pass_btn = customtkinter.CTkButton(hotbar,text="+",font=(("Roboto",15)),text_color=("white"),fg_color=("darkblue"),width=25,height=15)
         add_pass_btn.pack(pady=5,padx=0)
 
-        frame = PasswordOuterFrame(master=main_sc_root,width=350,height=300,border_width=3,border_color=("darkgreen"),scrollbar_fg_color=("green"),corner_radius=10,scrollbar_button_color=("white"))
+        frame = PasswordOuterFrame(master=main_sc_root,width=400,height=350,border_width=3,border_color=("darkgreen"),scrollbar_fg_color=("green"),corner_radius=10,scrollbar_button_color=("white"))
         frame.pack(pady=15,padx=10)
 
         
