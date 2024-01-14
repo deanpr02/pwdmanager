@@ -1,15 +1,8 @@
 import customtkinter
 from filemngr import *
 from PIL import Image
-import os
-from user import user,Password
+from user import user
 
-#root.withdraw hides root window
-#TODO:
-#We are going to serialize user object file, then we will convert the key to a bytes string and add them together. Then we will encrypt this string.
-#When we decrypt using the key we will test the key with the first n digits of the unencrypted string and if they match we know we have the same user.
-#root.update()
-#root.deiconify() brings it back into view
 user_archive = get_user_archive()
 img_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','assets/logimg.png'))
 
@@ -28,6 +21,7 @@ def set_window_dimensions(root):
 def close_window(root):
         root.destroy()
 
+#Encrypts the user data and then serializes/adds to the user file
 def update_archive(user_key,user,index):
     archive = get_user_archive()
     key = Fernet(user_key)
@@ -36,6 +30,7 @@ def update_archive(user_key,user,index):
     archive[index] = user_encrypted
     write_to_file(archive)
 
+#Log in screen class/window
 class LogScreen():
     def __init__(self,root):
         self.toplevel_window = None
@@ -67,6 +62,7 @@ class LogScreen():
         generate_btn = customtkinter.CTkButton(frame,text="Generate Key",command=lambda: self.generate_key(root))
         generate_btn.grid(column=1,row=3)
     
+    #Gets the archive and gets if the key successfully decrypts any of the data, if it does then load the next screen
     def log_in(self,root):
         if self.toplevel_window is None:
             user_archive = get_user_archive()
@@ -81,6 +77,7 @@ class LogScreen():
                 except InvalidToken:
                     pass
 
+    #Generates a key and creates a new instance of user
     def generate_key(self,root):
         key_window = customtkinter.CTkToplevel(root)
         key_window.geometry("400x175")
@@ -103,8 +100,6 @@ class LogScreen():
         user_archive.append(encrypted_data)
         write_to_file(user_archive)
 
-        #write_to_file(user_archive)
-
 
 #Password Screen after logging in
 class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
@@ -123,17 +118,6 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
         for name,item in self.user.applications.items():
             frame = PasswordFrame(self,name,kwargs["width"])
             frame.update_information(item)
-
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
-        #PasswordFrame(self,kwargs["width"])
     
     #Makes sure only one instance of an edit window is open
     def check_if_window_open(self):
@@ -146,9 +130,8 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
         self.password_child = child
         self.edit_window = EditWindow(self,self.password_child)
 
-    def add_password(self,app_name):
-        print("temp")
         
+#window that allows user to edit any of the password's information
 class EditWindow():
     def __init__(self,root,child):
         self.child = child
@@ -211,14 +194,14 @@ class EditWindow():
         update_btn = customtkinter.CTkButton(self.window,command=self.edit,text="Update")
         update_btn.grid(column=0,row=8)
         
-
+    #Edit function to modify the information
     def edit(self):
         was_updated = False
         new_app_name = self.app_txt.get()
         new_email_name = self.email_txt.get()
         new_username = self.username_txt.get()
         new_password = self.password_txt.get()
-        print(self.root.user.applications)
+    
         if new_app_name != '' and new_app_name != self.child.app_name:
             self.root.user.applications[new_app_name] = self.root.user.applications[self.child.app_name]
             del self.root.user.applications[self.child.app_name]
@@ -239,13 +222,9 @@ class EditWindow():
             was_updated = True
         if was_updated:
             update_archive(self.root.user.key,self.root.user,self.root.index)
-        #self.child.email_name = new_email
-        #self.child.email_name_lbl.configure(text=self.child.censor_email(new_email))
+            self.window.destroy()
 
-app = {"app_name": {
-
-}}
-
+#Container to hold all the different password frames
 class PasswordFrame():
     def __init__(self,root,name,w_width):
         self.w_width = w_width
@@ -319,7 +298,7 @@ class PasswordFrame():
 
           
 
-
+#main screen after logging in
 class MainScreen():
     def __init__(self,root,current_user,index):
         self.current_user = current_user

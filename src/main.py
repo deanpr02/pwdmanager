@@ -18,18 +18,11 @@ def main():
     y = (screen_h/2) - (height/2)
 
     root.title("Password Manager")
-    #root.geometry("450x400")
     root.geometry("%dx%d+%d+%d" % (width,height,x,y))
-    #root.columnconfigure(1,weight=3)
 
     # Class instance which creates the login screen; this will allow us to grab the user/password input
     # and store it into variables
-    #login_screen = LoginScreen(root)
-    test = LogScreen(root)
-
-
-#TODO Check log in credentials from the LoginScreen object; if they match a user in the data base
-    #We will move to the next screen with the user passed as a parameter to
+    log_in = LogScreen(root)
 
     # Main loop
     root.mainloop()
