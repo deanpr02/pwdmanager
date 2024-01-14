@@ -1,12 +1,14 @@
 import customtkinter
+from filemngr import *
 from PIL import Image
 import os
+from user import user
 
 #root.withdraw hides root window
 
 #root.update()
 #root.deiconify() brings it back into view
-user_archive = []
+user_archive = get_user_archive()
 img_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','assets/logimg.png'))
 
 #sets the dimensions of the window, and the x/y coordinates to center window
@@ -45,20 +47,42 @@ class LogScreen():
         welcome_text = customtkinter.CTkLabel(frame, text="Please enter your key, \nor press generate to create a new key")
         welcome_text.grid(column=1,row=1,padx=10)
 
-        pass_entry = customtkinter.CTkEntry(frame, placeholder_text="Enter key")
-        pass_entry.grid(column=1,row=2,padx=10)
+        self.pass_entry = customtkinter.CTkEntry(frame, placeholder_text="Enter key")
+        self.pass_entry.grid(column=1,row=2,padx=10)
 
         login_img = customtkinter.CTkImage(light_image=Image.open(img_path),dark_image=Image.open(img_path),size=(30,30))
-        login_btn = customtkinter.CTkButton(frame,text="",image=login_img,height=20,width=20,command=lambda: self.button_callback(root))
+        login_btn = customtkinter.CTkButton(frame,text="",image=login_img,height=20,width=20,command=lambda a=root: self.log_in(a))
         login_btn.grid(column=2,row=2,sticky='w')
 
-        generate_btn = customtkinter.CTkButton(frame,text="Log in",command=lambda: self.button_callback(root))
+        generate_btn = customtkinter.CTkButton(frame,text="Generate Key",command=lambda: self.generate_key(root))
         generate_btn.grid(column=1,row=3)
     
-    def button_callback(self,root):
+    def log_in(self,root):
         if self.toplevel_window is None:
-            self.toplevel_window = MainScreen(root,"place_holder_user")
-            root.withdraw()
+            #user_archive = get_user_archive()
+            for user in user_archive:
+                if user.key == bytes(self.pass_entry.get(),'utf-8'):
+                    self.toplevel_window = MainScreen(root,user)
+                    root.withdraw()
+
+    def generate_key(self,root):
+        key_window = customtkinter.CTkToplevel(root)
+        key_window.geometry("400x175")
+        key_window.title("Key Generated")
+
+        warning_msg = customtkinter.CTkLabel(key_window,text="WARNING: This is your unique log-in key, \nkeep it safe and do not lose it. \nThere will be no way to recover this key!")
+        warning_msg.pack(pady=10)
+
+        user_key = Fernet.generate_key()
+        key_box = customtkinter.CTkTextbox(key_window,font=("Roboto",13),text_color="red",height=10,width=350)
+        key_box.insert('0.0',user_key)
+        key_box.pack(pady=20,padx=5)
+        self.pass_entry.insert(0,user_key)
+
+        new_user = user(user_key)
+        user_archive.append(new_user)
+        write_to_file(user_archive)
+
 
 #Password Screen after logging in
 class PasswordOuterFrame(customtkinter.CTkScrollableFrame):

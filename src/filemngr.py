@@ -33,7 +33,6 @@ def file_exists(dir, file_name, extension):
     if not (os.path.exists(file)):
         f = open(file,'a')
         f.close()
-        print(file)
         return 0
     return 1
 if (file_exists("txt/","key",".key") == False):
