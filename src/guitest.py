@@ -169,7 +169,7 @@ class EditWindow():
         self.window.rowconfigure(8,weight=1)
 
         #app name labels
-        current_app_lbl = customtkinter.CTkLabel(self.window,text="idk")
+        current_app_lbl = customtkinter.CTkLabel(self.window,text=self.child.app_name)
         current_app_lbl.grid(column=1,row=0)
         app_lbl = customtkinter.CTkLabel(self.window,text="Current App Name:",height=10)
         app_lbl.grid(column=0,row=0,padx=5,sticky='w')
@@ -213,17 +213,32 @@ class EditWindow():
         
 
     def edit(self):
+        was_updated = False
         new_app_name = self.app_txt.get()
         new_email_name = self.email_txt.get()
+        new_username = self.username_txt.get()
+        new_password = self.password_txt.get()
         print(self.root.user.applications)
         if new_app_name != '' and new_app_name != self.child.app_name:
             self.root.user.applications[new_app_name] = self.root.user.applications[self.child.app_name]
             del self.root.user.applications[self.child.app_name]
             self.child.app_name = new_app_name
             self.child.app_name_lbl.configure(text=new_app_name)
+            was_updated = True
         if new_email_name != '':
-            self.root.user.applications[self.child.app_name]["email"] = self.email_txt.get()
-            self.child.email_name_lbl.configure(text=self.child.censor_email(self.email_txt.get()))
+            self.root.user.applications[self.child.app_name]["email"] = new_email_name
+            self.child.email_name_lbl.configure(text=self.child.censor_email(new_email_name))
+            was_updated = True
+        if new_username != '':
+            self.root.user.applications[self.child.app_name]["username"] = new_username
+            self.child.user_name_lbl.configure(text=new_username)
+            was_updated = True
+        if new_password != '':
+            self.root.user.applications[self.child.app_name]["password"] = new_password
+            self.child.password_lbl.configure(text=new_password)
+            was_updated = True
+        if was_updated:
+            update_archive(self.root.user.key,self.root.user,self.root.index)
         #self.child.email_name = new_email
         #self.child.email_name_lbl.configure(text=self.child.censor_email(new_email))
 
