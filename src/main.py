@@ -27,6 +27,7 @@ def main():
     #login_screen = LoginScreen(root)
     test = LogScreen(root)
 
+
 #TODO Check log in credentials from the LoginScreen object; if they match a user in the data base
     #We will move to the next screen with the user passed as a parameter to
 

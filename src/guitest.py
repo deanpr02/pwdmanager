@@ -5,7 +5,9 @@ import os
 from user import user
 
 #root.withdraw hides root window
-
+#TODO:
+#We are going to serialize user object file, then we will convert the key to a bytes string and add them together. Then we will encrypt this string.
+#When we decrypt using the key we will test the key with the first n digits of the unencrypted string and if they match we know we have the same user.
 #root.update()
 #root.deiconify() brings it back into view
 user_archive = get_user_archive()
@@ -59,11 +61,17 @@ class LogScreen():
     
     def log_in(self,root):
         if self.toplevel_window is None:
-            #user_archive = get_user_archive()
-            for user in user_archive:
-                if user.key == bytes(self.pass_entry.get(),'utf-8'):
-                    self.toplevel_window = MainScreen(root,user)
-                    root.withdraw()
+            user_archive = get_user_archive()
+            key = Fernet(bytes(self.pass_entry.get(),'utf-8'))
+            for encrypted_user in user_archive:
+                try:
+                    user = key.decrypt(encrypted_user)
+                    user = pickle.loads(user)
+                    if user.key == bytes(self.pass_entry.get(),'utf-8'):
+                        self.toplevel_window = MainScreen(root,user)
+                        root.withdraw()
+                except InvalidToken:
+                    pass
 
     def generate_key(self,root):
         key_window = customtkinter.CTkToplevel(root)
@@ -79,9 +87,15 @@ class LogScreen():
         key_box.pack(pady=20,padx=5)
         self.pass_entry.insert(0,user_key)
 
+        #Generate a new user and their encryption key
         new_user = user(user_key)
-        user_archive.append(new_user)
+        #user_data format: [key(44 digits)+user class data]
+        user_bytes = pickle.dumps(new_user)
+        encrypted_data = t_encrypt_data(user_key,user_bytes)
+        user_archive.append(encrypted_data)
         write_to_file(user_archive)
+
+        #write_to_file(user_archive)
 
 
 #Password Screen after logging in

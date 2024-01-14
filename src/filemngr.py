@@ -3,7 +3,7 @@ import pickle
 import hashlib
 from user import user
 from pathlib import Path
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet,InvalidToken
 
 #This is the path of the file containing our object file with all of our users along with their attributes.
 data_folder = Path("txt")
@@ -39,12 +39,24 @@ if (file_exists("txt/","key",".key") == False):
     write_key()
 key = load_key()
 
+def read_file():
+    with open(file_to_open,'rb') as file:
+        data = pickle.load(file)
+        return data
 #Writes a user object to the file; this object will be a list of all of the users at our disposal.
 def write_to_file(users):
-    decrypt_data()
+    #decrypt_data()
     with open(file_to_open,'wb') as file:
         pickle.dump(users,file)
-    encrypt_data()
+    #encrypt_data()
+
+def t_encrypt_data(key,data):
+    f = Fernet(key)
+    return f.encrypt(data)
+
+def t_decrypt_data(key,data):
+    f = Fernet(key)
+    return f.decrypt(data)
 
 #Encrypts the data using the key stored in key.key. This gives security so someone cannot just open the file and be able to read all of our users passwords.
 def encrypt_data():
@@ -104,13 +116,13 @@ def user_exists(username):
 
 #Gets the entire user list.
 def get_user_archive():
-    decrypt_data()
+    #decrypt_data()
     with open(file_to_open,'rb') as file:
         try:
             data = pickle.load(file)
         except EOFError:
             return []
-    encrypt_data()
+    #encrypt_data()
     return data
 
 #updates the application attribute of a user object. This function will add our application passwords per user, for example, user1 can add Facebook: password123 to their object.
