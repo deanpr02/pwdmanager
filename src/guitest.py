@@ -164,15 +164,17 @@ class EditWindow():
         self.window.rowconfigure(3,weight=1)
         self.window.rowconfigure(4,weight=1)
         self.window.rowconfigure(5,weight=1)
-        self.window.grid_rowconfigure(0,minsize=20)
+        self.window.rowconfigure(6,weight=1)
+        self.window.rowconfigure(7,weight=1)
+        self.window.rowconfigure(8,weight=1)
 
         #app name labels
         current_app_lbl = customtkinter.CTkLabel(self.window,text="idk")
         current_app_lbl.grid(column=1,row=0)
         app_lbl = customtkinter.CTkLabel(self.window,text="Current App Name:",height=10)
-        app_lbl.grid(column=0,row=0,padx=5,sticky="w")
+        app_lbl.grid(column=0,row=0,padx=5,sticky='w')
         enter_new_lbl2 = customtkinter.CTkLabel(self.window,text="Enter new ->",font=("Roboto",10))
-        enter_new_lbl2.grid(column=0,row=1,sticky="w",padx=5,pady=5)
+        enter_new_lbl2.grid(column=0,row=1,sticky='w',padx=5,pady=5)
         self.app_txt = customtkinter.CTkEntry(self.window)
         self.app_txt.grid(column=1,row=1)
 
@@ -180,9 +182,9 @@ class EditWindow():
         current_email_lbl = customtkinter.CTkLabel(self.window,text=self.root.user.applications[self.child.app_name]["email"])
         current_email_lbl.grid(column=1,row=2)
         email_lbl = customtkinter.CTkLabel(self.window,text="Current Email:",height=10)
-        email_lbl.grid(column=0,row=2,padx=5,sticky="w",pady=5)
+        email_lbl.grid(column=0,row=2,padx=5,sticky='w',pady=5)
         enter_new_lbl1 = customtkinter.CTkLabel(self.window,text="Enter new ->",font=("Roboto",10))
-        enter_new_lbl1.grid(column=0,row=3,sticky="w",padx=5,pady=5)
+        enter_new_lbl1.grid(column=0,row=3,sticky='w',padx=5,pady=5)
         self.email_txt = customtkinter.CTkEntry(self.window)
         self.email_txt.grid(column=1,row=3)
 
@@ -190,25 +192,34 @@ class EditWindow():
         current_username_lbl = customtkinter.CTkLabel(self.window,text=self.root.user.applications[self.child.app_name]["username"])
         current_username_lbl.grid(column=1,row=4)
         username_lbl = customtkinter.CTkLabel(self.window,text="Current Username:",height=10)
-        username_lbl.grid(column=0,row=4,padx=5,sticky="w",pady=5)
+        username_lbl.grid(column=0,row=4,padx=5,sticky='w',pady=5)
         enter_new_lbl3 = customtkinter.CTkLabel(self.window,text="Enter new ->",font=("Roboto",10))
-        enter_new_lbl3.grid(column=0,row=5,sticky="w",padx=5,pady=5)
+        enter_new_lbl3.grid(column=0,row=5,sticky='w',padx=5,pady=5)
         self.username_txt = customtkinter.CTkEntry(self.window)
-        self.email_txt.grid(column=1,row=5)
+        self.username_txt.grid(column=1,row=5)
 
         #password labels
+        current_password_lbl = customtkinter.CTkLabel(self.window,text=self.root.user.applications[self.child.app_name]["password"])
+        current_password_lbl.grid(column=1,row=6)
+        password_lbl = customtkinter.CTkLabel(self.window,text="Current Password:",height = 10)
+        password_lbl.grid(column=0,row=6,sticky='w',pady=5)
+        enter_new_lbl4 = customtkinter.CTkLabel(self.window,text="Enter new ->",font=("Roboto",10))
+        enter_new_lbl4.grid(column=0,row=7,sticky='w',padx=5,pady=5)
+        self.password_txt = customtkinter.CTkEntry(self.window)
+        self.password_txt.grid(column=1,row=7)
 
         update_btn = customtkinter.CTkButton(self.window,command=self.edit,text="Update")
-        update_btn.grid(column=0,row=5)
+        update_btn.grid(column=0,row=8)
         
 
     def edit(self):
         new_app_name = self.app_txt.get()
         new_email_name = self.email_txt.get()
-
-        if new_app_name != '':
+        print(self.root.user.applications)
+        if new_app_name != '' and new_app_name != self.child.app_name:
             self.root.user.applications[new_app_name] = self.root.user.applications[self.child.app_name]
             del self.root.user.applications[self.child.app_name]
+            self.child.app_name = new_app_name
             self.child.app_name_lbl.configure(text=new_app_name)
         if new_email_name != '':
             self.root.user.applications[self.child.app_name]["email"] = self.email_txt.get()
