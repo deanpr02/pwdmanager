@@ -120,9 +120,9 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
         #Holds the PasswordFrame class which invoked the edit window so we have access to that class
         self.password_child = None
 
-        for x in self.user.applications:
-            frame = PasswordFrame(self,kwargs["width"])
-            frame.update_information(x)
+        for name,item in self.user.applications.items():
+            frame = PasswordFrame(self,name,kwargs["width"])
+            frame.update_information(item)
 
         #PasswordFrame(self,kwargs["width"])
         #PasswordFrame(self,kwargs["width"])
@@ -152,6 +152,7 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
 class EditWindow():
     def __init__(self,root,child):
         self.child = child
+        self.root = root
         self.window = customtkinter.CTkToplevel(root)
 
         self.window.geometry("300x250")
@@ -166,7 +167,7 @@ class EditWindow():
         self.window.grid_rowconfigure(0,minsize=20)
 
         #app name labels
-        current_app_lbl = customtkinter.CTkLabel(self.window,text=self.child.app_name)
+        current_app_lbl = customtkinter.CTkLabel(self.window,text="idk")
         current_app_lbl.grid(column=1,row=0)
         app_lbl = customtkinter.CTkLabel(self.window,text="Current App Name:",height=10)
         app_lbl.grid(column=0,row=0,padx=5,sticky="w")
@@ -176,7 +177,7 @@ class EditWindow():
         self.app_txt.grid(column=1,row=1)
 
         #email labels
-        current_email_lbl = customtkinter.CTkLabel(self.window,text=self.child.email_name)
+        current_email_lbl = customtkinter.CTkLabel(self.window,text=self.root.user.applications[self.child.app_name]["email"])
         current_email_lbl.grid(column=1,row=2)
         email_lbl = customtkinter.CTkLabel(self.window,text="Current Email:",height=10)
         email_lbl.grid(column=0,row=2,padx=5,sticky="w",pady=5)
@@ -185,21 +186,44 @@ class EditWindow():
         self.email_txt = customtkinter.CTkEntry(self.window)
         self.email_txt.grid(column=1,row=3)
 
-        btn = customtkinter.CTkButton(self.window,command=self.edit)
-        btn.grid(column=0,row=5)
+        #user name labels
+        current_username_lbl = customtkinter.CTkLabel(self.window,text=self.root.user.applications[self.child.app_name]["username"])
+        current_username_lbl.grid(column=1,row=4)
+        username_lbl = customtkinter.CTkLabel(self.window,text="Current Username:",height=10)
+        username_lbl.grid(column=0,row=4,padx=5,sticky="w",pady=5)
+        enter_new_lbl3 = customtkinter.CTkLabel(self.window,text="Enter new ->",font=("Roboto",10))
+        enter_new_lbl3.grid(column=0,row=5,sticky="w",padx=5,pady=5)
+        self.username_txt = customtkinter.CTkEntry(self.window)
+        self.email_txt.grid(column=1,row=5)
+
+        #password labels
+
+        update_btn = customtkinter.CTkButton(self.window,command=self.edit,text="Update")
+        update_btn.grid(column=0,row=5)
         
 
     def edit(self):
-        new_app_name  = 'bruh'
+        new_app_name = self.app_txt.get()
+        new_email_name = self.email_txt.get()
+
+        if new_app_name != '':
+            self.root.user.applications[new_app_name] = self.root.user.applications[self.child.app_name]
+            del self.root.user.applications[self.child.app_name]
+            self.child.app_name_lbl.configure(text=new_app_name)
+        if new_email_name != '':
+            self.root.user.applications[self.child.app_name]["email"] = self.email_txt.get()
+            self.child.email_name_lbl.configure(text=self.child.censor_email(self.email_txt.get()))
         #self.child.email_name = new_email
         #self.child.email_name_lbl.configure(text=self.child.censor_email(new_email))
 
+app = {"app_name": {
 
+}}
 
 class PasswordFrame():
-    def __init__(self,root,w_width):
+    def __init__(self,root,name,w_width):
         self.w_width = w_width
-        self.app_name = "<App_Name>"
+        self.app_name = name
         self.email_name = "N/A"
         self.user_name= "N/A"
         self.password = "N/A"
@@ -246,10 +270,10 @@ class PasswordFrame():
             root.update_edit_window(self)
 
     def update_information(self,user):
-        self.app_name_lbl.configure(text=user.app_name)
-        self.email_name_lbl.configure(text=user.email_name)
-        self.user_name_lbl.configure(text=user.user_name)
-        self.password_lbl.configure(text=user.password)
+        #self.app_name_lbl.configure(text=user.app_name)
+        self.email_name_lbl.configure(text=user["email"])
+        self.user_name_lbl.configure(text=user["username"])
+        self.password_lbl.configure(text=user["password"])
 
     def censor_email(self,email):
         email = list(email)
@@ -308,9 +332,10 @@ class MainScreen():
 
     def create_pass(self):
         app_name = self.app_name_entry.get()
-        self.current_user.applications.append(Password(app_name))
+        #self.current_user.applications.append(Password(app_name))
+        self.current_user.applications[app_name] = {"username": "N/A", "email": "N/A", "password": "N/A"}
         update_archive(self.current_user.key,self.current_user,self.user_index)
-        new_frame = PasswordFrame(self.frame,self.frame.width)
+        new_frame = PasswordFrame(self.frame,app_name,self.frame.width)
         new_frame.app_name_lbl.configure(text=app_name)
         self.select_name_window.destroy()
         

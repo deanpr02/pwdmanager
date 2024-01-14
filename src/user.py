@@ -1,7 +1,7 @@
 class user():
     def __init__(self,key):
         self.key = key
-        self.applications = []
+        self.applications = {}
 
 class Password():
     def __init__(self,app_name):
