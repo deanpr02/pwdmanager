@@ -283,7 +283,7 @@ class PasswordFrame():
         #self.user_name_lbl.pack(padx=5,pady=5)
         password_title_lbl = customtkinter.CTkLabel(self.pass_container,text="Password:",height=11)
         password_title_lbl.grid(row=2,column=1)
-        self.password_lbl = customtkinter.CTkLabel(self.pass_container,text=self.password,height=11)
+        self.password_lbl = customtkinter.CTkLabel(self.pass_container,text=self.password,height=11,font=("Roboto",11))
         self.password_lbl.grid(row=2,column=2)
         #self.password_lbl.pack(padx=5,pady=5)
         #binding every child object in frame to the event
