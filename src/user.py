@@ -1,11 +1,11 @@
 class user():
     def __init__(self,key):
         self.key = key
-        self.applications = {}
+        self.applications = []
 
 class Password():
-    def __init__(self):
-        self.app_name = '<App_name>'
+    def __init__(self,app_name):
+        self.app_name = app_name
         self.email_name = 'N/A'
         self.user_name = 'N/A'
         self.password = 'N/A'

@@ -2,7 +2,7 @@ import customtkinter
 from filemngr import *
 from PIL import Image
 import os
-from user import user
+from user import user,Password
 
 #root.withdraw hides root window
 #TODO:
@@ -27,6 +27,14 @@ def set_window_dimensions(root):
 
 def close_window(root):
         root.destroy()
+
+def update_archive(user_key,user,index):
+    archive = get_user_archive()
+    key = Fernet(user_key)
+    user_bytes = pickle.dumps(user)
+    user_encrypted = key.encrypt(user_bytes)
+    archive[index] = user_encrypted
+    write_to_file(archive)
 
 class LogScreen():
     def __init__(self,root):
@@ -63,12 +71,12 @@ class LogScreen():
         if self.toplevel_window is None:
             user_archive = get_user_archive()
             key = Fernet(bytes(self.pass_entry.get(),'utf-8'))
-            for encrypted_user in user_archive:
+            for i,encrypted_user in enumerate(user_archive):
                 try:
                     user = key.decrypt(encrypted_user)
                     user = pickle.loads(user)
                     if user.key == bytes(self.pass_entry.get(),'utf-8'):
-                        self.toplevel_window = MainScreen(root,user)
+                        self.toplevel_window = MainScreen(root,user,i)
                         root.withdraw()
                 except InvalidToken:
                     pass
@@ -100,25 +108,32 @@ class LogScreen():
 
 #Password Screen after logging in
 class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
-    def __init__(self,master,**kwargs):
+    def __init__(self,master,user,index,**kwargs):
         super().__init__(master,**kwargs)
         #list to hold the password components
         self.password_comp_list = []
+        self.user = user
+        self.index = index
+        self.width = kwargs["width"]
         #var to hold the edit window so when one window is open, no other windows can open
         self.edit_window = None
         #Holds the PasswordFrame class which invoked the edit window so we have access to that class
         self.password_child = None
 
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
-        PasswordFrame(self,kwargs["width"])
+        for x in self.user.applications:
+            frame = PasswordFrame(self,kwargs["width"])
+            frame.update_information(x)
+
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
+        #PasswordFrame(self,kwargs["width"])
     
     #Makes sure only one instance of an edit window is open
     def check_if_window_open(self):
@@ -189,7 +204,6 @@ class PasswordFrame():
         self.user_name= "N/A"
         self.password = "N/A"
         #Replace this with different components
-        self.test = None
 
         self.pass_container = customtkinter.CTkFrame(root,width=self.w_width,height=80,fg_color="gray",border_color=("white"),border_width=1)
         self.pass_container.pack(padx=5,pady=5)
@@ -231,6 +245,12 @@ class PasswordFrame():
         if root.check_if_window_open():
             root.update_edit_window(self)
 
+    def update_information(self,user):
+        self.app_name_lbl.configure(text=user.app_name)
+        self.email_name_lbl.configure(text=user.email_name)
+        self.user_name_lbl.configure(text=user.user_name)
+        self.password_lbl.configure(text=user.password)
+
     def censor_email(self,email):
         email = list(email)
         censored_email = []
@@ -251,8 +271,9 @@ class PasswordFrame():
 
 
 class MainScreen():
-    def __init__(self,root,current_user):
+    def __init__(self,root,current_user,index):
         self.current_user = current_user
+        self.user_index = index
         #Creates new window for passwords
         self.main_sc_root = customtkinter.CTkToplevel(root)
         self.main_sc_root.title("Password Manager")
@@ -265,7 +286,7 @@ class MainScreen():
         add_pass_btn = customtkinter.CTkButton(hotbar,text="+",font=(("Roboto",15)),text_color=("white"),fg_color=("darkblue"),width=25,height=15,command=self.add_password)
         add_pass_btn.pack(pady=5,padx=0)
 
-        self.frame = PasswordOuterFrame(master=self.main_sc_root,width=400,height=350,border_width=3,border_color=("darkgreen"),scrollbar_fg_color=("green"),corner_radius=10,scrollbar_button_color=("white"))
+        self.frame = PasswordOuterFrame(master=self.main_sc_root,user = self.current_user,index=self.user_index,width=400,height=350,border_width=3,border_color=("darkgreen"),scrollbar_fg_color=("green"),corner_radius=10,scrollbar_button_color=("white"))
         self.frame.pack(pady=15,padx=10)
 
         
@@ -273,7 +294,23 @@ class MainScreen():
 
 
     def add_password(self):
-        select_name_window = customtkinter.CTkToplevel(self.main_sc_root)
-        select_name_window.geometry("%dx%d+%d+%d" % (self.main_sc_root.winfo_width(),150,self.main_sc_root.winfo_x(),self.main_sc_root.winfo_y()+self.main_sc_root.winfo_height()/4))
-        select_name_window.attributes("-topmost",True)
-        select_name_window.title("New Password")
+        self.select_name_window = customtkinter.CTkToplevel(self.main_sc_root)
+        self.select_name_window.geometry("%dx%d+%d+%d" % (self.main_sc_root.winfo_width(),150,self.main_sc_root.winfo_x(),self.main_sc_root.winfo_y()+self.main_sc_root.winfo_height()/4))
+        self.select_name_window.attributes("-topmost",True)
+        self.select_name_window.title("New Password")
+
+        txt_lbl = customtkinter.CTkLabel(self.select_name_window,text="Enter new application name")
+        txt_lbl.pack()
+        self.app_name_entry = customtkinter.CTkEntry(self.select_name_window)
+        self.app_name_entry.pack()
+        create_pass_btn = customtkinter.CTkButton(self.select_name_window,text="Add",command=self.create_pass)
+        create_pass_btn.pack()
+
+    def create_pass(self):
+        app_name = self.app_name_entry.get()
+        self.current_user.applications.append(Password(app_name))
+        update_archive(self.current_user.key,self.current_user,self.user_index)
+        new_frame = PasswordFrame(self.frame,self.frame.width)
+        new_frame.app_name_lbl.configure(text=app_name)
+        self.select_name_window.destroy()
+        
