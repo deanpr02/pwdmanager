@@ -11,6 +11,8 @@ key = None
 
 def init():
     global key
+    if not data_folder.exists():
+        data_folder.mkdir(parents=True,exist_ok=True)
     if (file_exists("txt/","key",".key") == False):
         write_key()
     key = load_key()
