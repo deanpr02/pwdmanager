@@ -6,7 +6,7 @@ from guitest import *
 
 def main():
     #Create the main window and window frame
-    file.file_exists("txt/","user",".txt")
+    #file_exists("txt/","user",".txt")
     root = customtkinter.CTk()
     width = 450
     height = 400
@@ -20,8 +20,7 @@ def main():
     root.title("Password Manager")
     root.geometry("%dx%d+%d+%d" % (width,height,x,y))
 
-    # Class instance which creates the login screen; this will allow us to grab the user/password input
-    # and store it into variables
+    
     log_in = LogScreen(root)
 
     # Main loop
@@ -34,7 +33,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-#KEY: viJAyYc3bci3o9T8PtGBVFnt-N68SjWfmD6C924-yRI=
 
 
 

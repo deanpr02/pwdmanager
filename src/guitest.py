@@ -137,6 +137,7 @@ class EditWindow():
         self.child = child
         self.root = root
         self.window = customtkinter.CTkToplevel(root)
+        self.window.title("Edit Password")
 
         self.window.geometry("300x250")
         self.window.columnconfigure(0,weight=1)
@@ -293,11 +294,7 @@ class PasswordFrame():
         else:
             return "".join(email)
 
-          
-               
-
-          
-
+        
 #main screen after logging in
 class MainScreen():
     def __init__(self,root,current_user,index):
