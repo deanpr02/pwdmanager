@@ -2,13 +2,14 @@ import tkinter as tk
 import filemngr as file
 from functools import partial
 from user import user
-#TODO check if the file containing username/password info exists and if it does then open it and check to see
-#If the password matches the username;
 
 #This list will store all of the users we create
 user_archive = []
 
-#The initial log in screen which handles if a user exists and the creation of a user along with the logging in functionality.
+
+"""
+The initial log in screen which handles if a user exists and the creation of a user along with the logging in functionality
+"""
 class LoginScreen():
     def __init__(self, root):
         # Instance Variables
@@ -40,7 +41,9 @@ class LoginScreen():
         self.create_btn = tk.Button(root,text="Create User",command=self.create_user)
         self.create_btn.grid(column=0,row=3,sticky='W',padx=20,pady=10)
 
-    #Checks to see if the username exists and if the password matches; note the passwords are hashed. If they do match the user will be able to proceed to the next screen.
+    """
+    Checks to see if the username exists and if the password matches; note the passwords are hashed. If they do match the user will be able to proceed to the next screen
+    """
     def check_credentials(self,root):
         self.user_input = self.username_box.get()
         self.pass_input = self.password_box.get()
@@ -62,7 +65,9 @@ class LoginScreen():
         else:
             self.error_label.config(text="User does not exist")
 
-    #Creates a new user; if a username already exists it will display an error message.
+    """
+    Creates a new user; if a username already exists it will display an error message
+    """
     def create_user(self):
         new_username = self.username_box.get()
         new_password = self.password_box.get()
@@ -81,7 +86,9 @@ class LoginScreen():
         self.password_box.delete(0,'end')
 
 
-#The user screen where you can look up your own personal passwords you have added.
+"""
+The user screen where you can look up your own personal passwords you have added
+"""
 class UserScreen():
     def __init__(self,root,current_user):
         #The current user is a user class object with username, password, and applications attributes
@@ -103,7 +110,6 @@ class UserScreen():
         self.add_button = tk.Button(root,text="Add",command=partial(self.add_data,root))
         self.add_button.grid(column=3,row=2,padx=(0,15))
 
-        #Retrieve data function
     def retrieve_data(self):
         requested = file.get_user(self.current_user.username).applications[self.entry_box.get()]
         r = tk.Tk()
@@ -111,10 +117,7 @@ class UserScreen():
         r.title(self.entry_box.get())
         req_label = tk.Label(r,text=requested)
         req_label.place(relx=0.5,rely=0.5,anchor="center")
-        #I'll want to store the keys aka application names such as facebook in all lowercase, so
-        #Once the input is read we will .lowercase() to make sure we dont have any capital letters
 
-        #Add password
     def add_data(self,root):
         temp_root = tk.Tk()
         temp_root.title = "Add Password"
@@ -123,7 +126,9 @@ class UserScreen():
         temp_root.columnconfigure(1,weight=3)
         temp = TempWindow(temp_root,self.current_user)
 
-#Temp window is a window that is created when adding a new password and then it is destroyed after that.
+"""
+Temp window is a window that is created when adding a new password and then it is destroyed after that
+"""
 class TempWindow():
     def __init__(self,root,user):
         self.user_input =""
@@ -143,7 +148,9 @@ class TempWindow():
         self.trigger_btn = tk.Button(root,text="Log",command=partial(self.log_data,root))
         self.trigger_btn.grid(column=0,row=2)
 
-    #Log the new user name and password
+    """
+    Log the new user name and password
+    """
     def log_data(self,root):
         file.update_user_archive(self.current_user,self.user_entry.get(),self.pass_entry.get())
         root.destroy()

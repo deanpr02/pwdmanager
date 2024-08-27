@@ -6,7 +6,9 @@ from user import user
 user_archive = get_user_archive()
 img_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','assets/logimg.png'))
 
-#sets the dimensions of the window, and the x/y coordinates to center window
+"""
+sets the dimensions of the window, and the x/y coordinates to center window
+"""
 def set_window_dimensions(root):
     width = 450
     height = 400
@@ -21,7 +23,9 @@ def set_window_dimensions(root):
 def close_window(root):
         root.destroy()
 
-#Encrypts the user data and then serializes/adds to the user file
+"""
+Encrypts the user data and then serializes/adds to the user file
+"""
 def update_archive(user_key,user,index):
     archive = get_user_archive()
     key = Fernet(user_key)
@@ -30,7 +34,9 @@ def update_archive(user_key,user,index):
     archive[index] = user_encrypted
     write_to_file(archive)
 
-#Log in screen class/window
+"""
+Log in screen class/window
+"""
 class LogScreen():
     def __init__(self,root):
         self.toplevel_window = None
@@ -62,7 +68,9 @@ class LogScreen():
         generate_btn = customtkinter.CTkButton(frame,text="Generate Key",command=lambda: self.generate_key(root))
         generate_btn.grid(column=1,row=3)
     
-    #Gets the archive and gets if the key successfully decrypts any of the data, if it does then load the next screen
+    """
+    Gets the archive and gets if the key successfully decrypts any of the data, if it does then load the next screen
+    """
     def log_in(self,root):
         if self.toplevel_window is None:
             user_archive = get_user_archive()
@@ -77,7 +85,9 @@ class LogScreen():
                 except InvalidToken:
                     pass
 
-    #Generates a key and creates a new instance of user
+    """
+    Generates a key and creates a new instance of user
+    """
     def generate_key(self,root):
         key_window = customtkinter.CTkToplevel(root)
         key_window.geometry("400x175")
@@ -101,7 +111,9 @@ class LogScreen():
         write_to_file(user_archive)
 
 
-#Password Screen after logging in
+"""
+Password Screen after logging in
+"""
 class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
     def __init__(self,master,user,index,**kwargs):
         super().__init__(master,**kwargs)
@@ -119,19 +131,25 @@ class PasswordOuterFrame(customtkinter.CTkScrollableFrame):
             frame = PasswordFrame(self,name,kwargs["width"])
             frame.update_information(item)
     
-    #Makes sure only one instance of an edit window is open
+    """
+    Makes sure only one instance of an edit window is open
+    """
     def check_if_window_open(self):
         if self.edit_window is None or not self.edit_window.window.winfo_exists():
              return True
         return False
     
-    #handler function for the edit window
+    """
+    Handler function for the edit window
+    """
     def update_edit_window(self,child):
         self.password_child = child
         self.edit_window = EditWindow(self,self.password_child)
 
         
-#window that allows user to edit any of the password's information
+"""
+Window that allows user to edit any of the password's information
+"""
 class EditWindow():
     def __init__(self,root,child):
         self.child = child
@@ -195,7 +213,9 @@ class EditWindow():
         update_btn = customtkinter.CTkButton(self.window,command=self.edit,text="Update")
         update_btn.grid(column=0,row=8)
         
-    #Edit function to modify the information
+    """
+    Edit function to modify the information
+    """
     def edit(self):
         was_updated = False
         new_app_name = self.app_txt.get()
@@ -225,7 +245,9 @@ class EditWindow():
             update_archive(self.root.user.key,self.root.user,self.root.index)
             self.window.destroy()
 
-#Container to hold all the different password frames
+"""
+Container to hold all the different password frames
+"""
 class PasswordFrame():
     def __init__(self,root,name,w_width):
         self.w_width = w_width
@@ -270,7 +292,6 @@ class PasswordFrame():
         for w in self.pass_container.winfo_children():
             w.bind("<Button-1>",lambda event, a=root: self.edit_password(event,a))
     
-    #Will want to pull up a screen that allows you to modify the information for that password
     def edit_password(self, event, root):
         if root.check_if_window_open():
             root.update_edit_window(self)
