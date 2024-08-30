@@ -6,7 +6,6 @@ from guitest import *
 
 def main():
     #Create the main window and window frame
-    #file_exists("txt/","user",".txt")
     root = customtkinter.CTk()
     width = 450
     height = 400

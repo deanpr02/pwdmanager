@@ -61,12 +61,6 @@ def file_exists(dir, file_name, extension):
         return 0
     return 1
 
-
-#if (file_exists("txt/","key",".key") == False):
-#    write_key()
-#key = load_key()
-
-
 """
 Reads some data from a file in bytes
 
@@ -158,12 +152,19 @@ def get_user(username):
     encrypt_data()
     return fetch_user
 
-
+"""
+Creates the user archive which stores the passwords for different applications
+"""
 def create_archive():
     f = open("txt/user.txt",'a')
     f.close()
 
-#Checks to see if a user exists; this will be used to determine if they even exist to prevent errors.
+"""
+Checks to see if a user exists in the storage
+
+Return:
+    True if user exists; False if user does not exist
+"""
 def user_exists(username):
     decrypt_data()
     with open(file_to_open,'rb') as file:
@@ -179,7 +180,12 @@ def user_exists(username):
     encrypt_data()
     return False
 
-#Gets the entire user list.
+"""
+Grabs the user list object
+
+Return:
+    list of users -> array of user objects
+"""
 def get_user_archive():
     #decrypt_data()
     if not os.path.exists(file_to_open):
@@ -194,7 +200,9 @@ def get_user_archive():
     #encrypt_data()
     return data
 
-#updates the application attribute of a user object. This function will add our application passwords per user, for example, user1 can add Facebook: password123 to their object.
+"""
+Updates the application attribute of some user object
+"""
 def update_user_archive(current_user,key,member):
     decrypt_data()
     with open(file_to_open,'rb') as file:
@@ -209,7 +217,12 @@ def update_user_archive(current_user,key,member):
     encrypt_data()
     write_to_file(data)
 
-#This method will take in a password and return the hashed version of it using the sha256 hashing method
+"""
+Takes in a password and hashes it using SHA256 hash algorithm
+
+Return:
+    hashed password -> string
+"""
 def hash_password(password):
     hash_pass = hashlib.sha256(password.encode())
     return hash_pass.hexdigest()
